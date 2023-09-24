@@ -1,5 +1,46 @@
+1. make a directory for everything
+2. clone your app directory into that directory
+3. make a virtual environment in your app's directory
+4. activate that environment, pip install packages from your requirements.txt
+5. test with gunicorn --bind 0.0.0.0:8050 app:server or whatever port you set it to
+6. move to a production port ideally
+
+
 1. navigate to the folder where your app.py is
 
+make a virtual environment and activate it, then install your packages
 python3 -m venv env; source env/bin/activate
 
-gunicorn app:server — bind=0.0.0.0:8050
+
+use this to run your server for testing
+gunicorn --bind 0.0.0.0:8050 app:server
+
+
+
+
+
+                                                                                     dashapp.service                                                                                                
+[Unit]
+Description=Gunicorn daemon to serve my dashapp
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/viz/maverick_dash_dbc
+ExecStart=/home/ubuntu/viz/maverick_dash_dbc/env/bin/gunicorn --bind
+unix:dashapp.sock app:server
+
+[Install]
+WantedBy=multi-user.target
+
+for nginx server configuration:
+
+server {
+ listen 80;
+ server_name 172.31.10.15;
+
+ location / {
+ proxy_pass http://unix:/home/ubuntu/viz/maverick_dash_dbc/dashapp.sock
+ }
+}
