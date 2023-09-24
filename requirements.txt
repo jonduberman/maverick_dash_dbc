@@ -5,3 +5,4 @@ scipy
 scikit-learn
 dash
 dash_bootstrap_components
+gunicorn

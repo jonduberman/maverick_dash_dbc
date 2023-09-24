@@ -160,8 +160,9 @@ def box_and_whisker(date):
             labels={'trim_level':'Trim Level','list_price':'List Price'})
     return figure
 
-
+# for gunicorn/wsgi 
+server = app.server
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0',port=port, )
+    app.run_server(debug=True, host='0.0.0.0',port=port)
 
