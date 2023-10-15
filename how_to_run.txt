@@ -25,22 +25,44 @@ Description=Gunicorn daemon to serve my dashapp
 After=network.target
 
 [Service]
-User=ubuntu
+User=ec2-user
 Group=www-data
-WorkingDirectory=/home/ubuntu/viz/maverick_dash_dbc
-ExecStart=/home/ubuntu/viz/maverick_dash_dbc/env/bin/gunicorn --bind
-unix:dashapp.sock app:server
+WorkingDirectory=/home/ec2-user/viz/maverick_dash_dbc
+Environment="PATH=/home/ec2-user/viz/maverick_dash_dbc/env/bin"
+ExecStart=/home/ec2-user/viz/maverick_dash_dbc/env/bin/gunicorn --workers 3 --bind unix:maverick_dash_dbc.sock -m 007 app:server
 
 [Install]
 WantedBy=multi-user.target
 
 for nginx server configuration:
 
+/etc/nginx/sites-available/app
+
 server {
  listen 80;
- server_name 172.31.10.15;
+ server_name ec2-3-22-241-9.us-east-2.compute.amazonaws.com;
 
  location / {
- proxy_pass http://unix:/home/ubuntu/viz/maverick_dash_dbc/dashapp.sock
+    include proxy_params;
+ proxy_pass http://unix:/home/ec2-user/viz/maverick_dash_dbc/maverick_dash_dbc.sock;
  }
 }
+
+
+linking sites-available and sites-enabled 
+sudo ln -s /etc/nginx/sites-available/myproject /etc/nginx/sites-enabled
+
+
+
+[Unit]
+Description=Gunicorn instance to serve maverick_dash_dbc
+After=network.target
+
+[Service]
+WorkingDirectory=/home/ec2-user/viz/maverick_dash_dbc
+Environment="PATH=/home/ec2-user/viz/maverick_dash_dbc/env/bin"
+ExecStart=/home/ec2-user/viz/maverick_dash_dbc/env/bin/gunicorn --workers 3 $
+
+
+[Install]
+WantedBy=multi-user.target
