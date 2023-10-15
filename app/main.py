@@ -14,9 +14,17 @@ port = int(os.environ.get("PORT", 80))
 
 app = Dash(__name__)
 
-data_path = 'data/maverick_data_processed.csv'
-df = pd.read_csv(data_path)
-df = df.drop(columns=['Unnamed: 0'])
+#data_path = '/data/maverick_data_processed.csv'
+data_path = os.getcwd() + '/app/data/maverick_data_processed.csv'
+
+try:
+    df = pd.read_csv(data_path)
+    #df = df.drop(columns=['Unnamed: 0'])
+except Exception as e:
+     nodata = ["condition","model_year","make","model","trim_level","list_price","exterior_color","interior_color","fwd_or_awd","hybrid_or_eco","mileage","dealer_address","date_parsed","url","data_source_name"]
+     dfdata = [[0 for x in nodata] for x in nodata]
+     df = pd.DataFrame(columns=nodata, data=dfdata)
+
 
 dedupe_cols = ['condition', 'model_year', 'make',
                'model', 'trim_level', 'list_price',
@@ -136,7 +144,8 @@ app.layout = dbc.Container([
         dbc.Col(
             html.Div([
                 dash_table.DataTable(df.to_dict('records'), [{"name": i, "id": i} for i in df.columns],
-                                     filter_action='native'),
+                                     filter_action='native',
+                                     sort_action='native'),
             ])
         )
     ]),
