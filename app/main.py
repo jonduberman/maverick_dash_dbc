@@ -10,13 +10,9 @@ from sklearn.linear_model import LinearRegression
 from dash import Dash, html, dcc, callback, Output, Input, dash_table
 import dash_bootstrap_components as dbc
 
-#port = int(os.environ.get("PORT", 5000))
+port = int(os.environ.get("PORT", 80))
 
 app = Dash(__name__)
-
-# for gunicorn/wsgi 
-server = app.server
-
 
 data_path = 'data/maverick_data_processed.csv'
 df = pd.read_csv(data_path)
@@ -166,5 +162,5 @@ def box_and_whisker(date):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=port)
 
